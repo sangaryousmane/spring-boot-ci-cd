@@ -1,12 +1,13 @@
-name: Building spring boot app
+name: Build & Deploy Spring app
 
 on:
   push:
     branches:
       - main
+
 jobs:
   build-deploy:
-    name: Build and deploy spring app
+    name: Build and Deploy Spring boot for beginner
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,36 +22,26 @@ jobs:
       - name: Unit Tests
         run: mvn -B test --file pom.xml
 
-      - name: Build the app
+      - name: Build the application
         run: |
           mvn clean
           mvn -B package --file pom.xml
 
-      - name: Build the docker Image
+      - name: Build Docker Image
         uses: docker/build-push-action@v2
         with: &dockerize
           context: .
           dockerfile: Dockerfile
           push: false
-          tags: ${{ secrets.DOCKER_USERNAME }}/demo.jar:today
-
-      - name: Login to Dockerfile
+          tags: ${{ secrets.DOCKER_USERNAME }}/demo:today
+      - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{secrets.DOCKER_USERNAME}}
-          password: ${{secrets.DOCKER_PASSWORD}}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push To Docker Hub
+      - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           <<: *dockerize
           push: true
-
-
-
-
-
-
-          
-
-
